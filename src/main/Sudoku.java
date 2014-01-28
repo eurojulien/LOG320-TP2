@@ -158,18 +158,23 @@ public class Sudoku {
 		// Boucle pour sauter par dessus les cases ou il y a deja un chiffre
 		}while(sudoku[nextI][nextJ] != 0);
 		
-		System.out.println("Next I : " + nextI + " Next J : " + nextJ);
+		//System.out.println("Next I : " + nextI + " Next J : " + nextJ);
 		
 		// Verification des differentes possibilites
 		for(int cell = 1; cell <= TAILLE_MAX; cell ++){
+				
+				System.out.println(i + ":" + j + " TRY : " + cell);
+				
 				if(EstValide(i, j, cell)){
 					sudoku[i][j] = cell;
-					if(backTracking(nextI, nextJ)){
-						return true;
-					}
+					backTracking(nextI, nextJ);
 				}
 		}
 	
+		System.out.println(" FALSE ;( ");
+		
+		// Re Initialisation de la case ...
+		sudoku[i][j] = 0;
 		return false;
 	}
 }
