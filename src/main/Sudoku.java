@@ -1,5 +1,6 @@
 package main;
 
+import java.math.*;
 public class Sudoku {
 
 	
@@ -54,7 +55,7 @@ public class Sudoku {
 						
 						sudoku[j][i]				= cell;
 					
-						// Calcul du nombre de données != 0 par range/colonne
+						// Calcul du nombre de données ou != 0 par range/colonne
 						if(cell != 0){
 							sudoku[TAILLE_MAX][i]	++;
 							sudoku[j][TAILLE_MAX]	++;
@@ -65,6 +66,52 @@ public class Sudoku {
 		}
 		
 		BinaryStdIn.close();
+	}
+	
+	// i : Position en X
+	// j : Position en Y
+	// k : Valeur numerique a verifier
+	public static boolean EstValide(int i, int j, int k){
+		
+		if(i > TAILLE_MAX || j > TAILLE_MAX) return false;
+		if(k == 0) return true;
+		
+		int offsetI = (int)Math.floor(i/3) * 3;
+		int offsetJ = (int)Math.floor(j/3) * 3;
+		
+		// Verification de la rangee
+		for(int z = 0; z < TAILLE_MAX; z ++){
+			
+			// Verification de la rangee
+			if(z != i){
+				if (sudoku[z][j] == k) return false;
+			}
+			
+			// Verification de la colonne
+			if(z != j){
+				if (sudoku[i][z] == k) return false;
+			}
+			
+			// Verification dans le carre 3x3
+			if(offsetI + z%3 != i && offsetJ + (int)Math.floor(z/3) != j){
+				
+				if(sudoku[offsetI + z%3][offsetJ + (int)Math.floor(z/3)] == k) return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// Verifie tout le sudoku
+	public static boolean EstValide(){
+		
+		for(int i = 0; i < TAILLE_MAX; i ++){
+			for(int j = 0; j < TAILLE_MAX; j ++){
+				if (!EstValide(i,j,sudoku[i][j])) return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	// Fonction Debug

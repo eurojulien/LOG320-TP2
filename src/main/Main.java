@@ -11,6 +11,8 @@ public class Main {
 		Sudoku.getSudokuFromFile(args[0]);
 		
 		Sudoku.printDebugSudoku();
+		
+		System.out.println("Sudoku est valide : " + Sudoku.EstValide());
 	}
 
 }
