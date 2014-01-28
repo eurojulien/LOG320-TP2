@@ -93,8 +93,9 @@ public class Sudoku {
 			}
 			
 			// Verification dans le carre 3x3
-			if(offsetI + z%3 != i && offsetJ + (int)Math.floor(z/3) != j){
+			if((offsetI + z%3) != i && (offsetJ + (int)Math.floor(z/3)) != j){
 				
+				//System.out.println("i : " + i + " Offset I : " + offsetI + " Cell I " + z%3 + " j : " + j + " Offset J : " + offsetJ + " Cell J " + (int)Math.floor(z/3));
 				if(sudoku[offsetI + z%3][offsetJ + (int)Math.floor(z/3)] == k) return false;
 			}
 		}
@@ -130,5 +131,45 @@ public class Sudoku {
 		}
 	}
 	
+	// Solver le sudoku
+	public static boolean backTracking(int i, int j){
+		
+		int nextI = i, nextJ = j;
+		
+		// Recherche de la prochaine case a verifier (Valeur initiale doit etre = zero)
+		do{
+			if(nextJ < (TAILLE_MAX - 1)){
+				nextJ 	++;
+			}
+			else if(nextI < (TAILLE_MAX - 1)){
+				nextI 	++;
+				nextJ = 0;
+			}
+			else{
+				// Derniere case du tableau 2D Sudoku atteinte
+				// i = 9, j = 9
+				// doit faire le retour final !
+				
+				System.out.println("LAST I : " + nextI + " LAST J : " + nextJ);
+				
+				return true;
+			}
+			
+		// Boucle pour sauter par dessus les cases ou il y a deja un chiffre
+		}while(sudoku[nextI][nextJ] != 0);
+		
+		System.out.println("Next I : " + nextI + " Next J : " + nextJ);
+		
+		// Verification des differentes possibilites
+		for(int cell = 1; cell <= TAILLE_MAX; cell ++){
+				if(EstValide(i, j, cell)){
+					sudoku[i][j] = cell;
+					if(backTracking(nextI, nextJ)){
+						return true;
+					}
+				}
+		}
 	
+		return false;
+	}
 }

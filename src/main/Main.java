@@ -12,7 +12,13 @@ public class Main {
 		
 		Sudoku.printDebugSudoku();
 		
-		System.out.println("Sudoku est valide : " + Sudoku.EstValide());
+		System.out.println("Sudoku de base est valide : " + Sudoku.EstValide());
+		
+		Sudoku.backTracking(0, 0);
+		
+		Sudoku.printDebugSudoku();
+		
+		System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
 	}
 
 }
