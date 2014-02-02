@@ -135,6 +135,7 @@ public class Sudoku {
 	public static boolean backTracking(int i, int j){
 		
 		int nextI = i, nextJ = j;
+		boolean isSolved = false;
 		
 		// Recherche de la prochaine case a verifier (Valeur initiale doit etre = zero)
 		do{
@@ -147,34 +148,39 @@ public class Sudoku {
 			}
 			else{
 				// Derniere case du tableau 2D Sudoku atteinte
-				// i = 9, j = 9
+				// i = 8, j = 8
 				// doit faire le retour final !
 				
-				System.out.println("LAST I : " + nextI + " LAST J : " + nextJ);
+				//System.out.println("LAST I : " + nextI + " LAST J : " + nextJ);
 				
-				return true;
+				isSolved = true;
 			}
 			
 		// Boucle pour sauter par dessus les cases ou il y a deja un chiffre
-		}while(sudoku[nextI][nextJ] != 0);
+		}while(sudoku[nextI][nextJ] != 0 && nextI != TAILLE_MAX-1 && nextJ != TAILLE_MAX-1);
 		
 		//System.out.println("Next I : " + nextI + " Next J : " + nextJ);
 		
 		// Verification des differentes possibilites
 		for(int cell = 1; cell <= TAILLE_MAX; cell ++){
 				
-				System.out.println(i + ":" + j + " TRY : " + cell);
+				//System.out.println(i + ":" + j + " TRY : " + cell);
 				
 				if(EstValide(i, j, cell)){
 					sudoku[i][j] = cell;
-					backTracking(nextI, nextJ);
+					if(isSolved){
+						return true;
+					}
+					
+					else if (backTracking(nextI, nextJ)) return true;
 				}
 		}
 	
-		System.out.println(" FALSE ;( ");
+		//System.out.println("FALSE");
 		
 		// Re Initialisation de la case ...
 		sudoku[i][j] = 0;
-		return false;
+		
+		return isSolved;
 	}
 }
