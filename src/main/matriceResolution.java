@@ -16,20 +16,20 @@ public class matriceResolution {
     ArrayList<int[]> tabCoordoneeGagnante = new ArrayList<int[]>();
 
 
-    public static int[][] obtenirListePositionsPreferable(int[][] puzzleEnCours){
+    public static int[][] obtenirListePositionsPreferable(int[][] sudoku){
 
-        int[][] listePreferable = new int[81][];
+        int[][] listePreferable = new int[81][2];
         int[][] tabSolving = new int[9][9];
 
         for(int i = 0;i<TAILLE_MAX;i++){
             for(int j = 0;j<TAILLE_MAX;j++){
-                if(puzzleEnCours[i][j] != 0){
+                if(sudoku[i][j] != 0){
                     tabSolving = addValue(i,j,tabSolving);
                 }
             }
         }
+
         for(int x =0; x<listePreferable.length;x++){
-            listePreferable[x] = new int [2];
             int meilleurI = -1;
             int meilleurJ = -1;
             int meilleurScore =0;
@@ -43,42 +43,55 @@ public class matriceResolution {
                 }
             }
             listePreferable[x][0] = meilleurI;
-            listePreferable[x][0] = meilleurJ;
+            listePreferable[x][1] = meilleurJ;
         }
         return listePreferable;
     }
 
-    public static String obtenirResultatPossible(int[][] puzzleEncours){
-
-        /*for(int s = 0; s< tabCoordoneeGagnante.size();s++){
-            String accumulateur = "";
-            int i = tabCoordoneeGagnante.get(s)[0];
-            int j = tabCoordoneeGagnante.get(s)[1];
-            for(int x=0;x<TAILLE_MAX;x++){
-                // on vérifie toute la ligne et colone de la case trouvée
-                if(x != i){
-                    if(puzzleEnCours[x][j] != 0){
-                        if(!accumulateur.contains("" + puzzleEnCours[x][j])){
-                            if(puzzleEnCours[x][j] != 0){
-                                accumulateur += puzzleEnCours[x][j];
-                            }
-                        }
-                    }
-                }
-
-                if(x != j){
-                    if(puzzleEnCours[i][x] != 0){
-                        if(!accumulateur.contains("" + puzzleEnCours[i][x])){
-                            if(puzzleEnCours[i][x] != 0){
-                                accumulateur += puzzleEnCours[i][x];
-                            }
+    public static String obtenirResultatPossible(int[][] puzzleEncours, int i, int j){
+        String retour = "";
+        for(int x=0;x<TAILLE_MAX;x++){
+            // on vérifie toute la ligne et colone de la case trouvée
+            if(x != i){
+                if(puzzleEncours[x][j] != 0){
+                    if(!retour.contains("" + puzzleEncours[x][j])){
+                        if(puzzleEncours[x][j] != 0){
+                            retour += puzzleEncours[x][j];
                         }
                     }
                 }
             }
 
+            if(x != j){
+                if(puzzleEncours[i][x] != 0){
+                    if(!retour.contains("" + puzzleEncours[i][x])){
+                        if(puzzleEncours[i][x] != 0){
+                            retour += puzzleEncours[i][x];
+                        }
+                    }
+                }
+            }
         }
-    */
+
+
+        int startIndexI = getStartIndexForSquare(i);
+        int startIndexJ = getStartIndexForSquare(j);
+        int maxN = startIndexI + 3;
+        int maxM = startIndexJ + 3;
+
+        //todo a optimiser ici !
+        for(int n = startIndexI; n<maxN;n++){
+            for(int m = startIndexJ; m<maxM;m++){
+                if(!retour.contains("" + puzzleEncours[n][m])){
+                    if(puzzleEncours[n][m] != 0){
+                        retour += puzzleEncours[n][m];
+                    }
+                }
+            }
+        }
+
+
+        return retour;
     }
 
     public matriceResolution(int[][] puzzleEnCours,matriceResolution parent,String name){
@@ -269,7 +282,7 @@ public class matriceResolution {
 
         int startIndexI = getStartIndexForSquare(i);
         int startIndexJ = getStartIndexForSquare(j);
-
+        // TODO FOO : A OPTIMISER ! (FCT EST VALIDE)
         int maxN = startIndexI + 3;
         int maxM = startIndexJ + 3;
         for(int n = startIndexI; n<maxN;n++){
