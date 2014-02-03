@@ -8,8 +8,8 @@ public class Sudoku {
 	 * Description Sudoku
 	 * 
 	 * 0 = Valeur de la case
-	 * # = Nombre de données > 0 de la colonne/ligne
-	 * # sera utilisé plus tard pour un algorithme plus avance
+	 * # = Nombre de donnï¿½es > 0 de la colonne/ligne
+	 * # sera utilisï¿½ plus tard pour un algorithme plus avance
 	 * _ _ _ _ _ _ _ _ _ _ _ _ _
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
@@ -30,7 +30,7 @@ public class Sudoku {
 	
 	
 	private Sudoku(){}
-	
+
 	// Creation du sudoku a partir d'un fichier texte 
 	public static void getSudokuFromFile(String fileName){
 	
@@ -55,7 +55,7 @@ public class Sudoku {
 						
 						sudoku[j][i]				= cell;
 					
-						// Calcul du nombre de données ou != 0 par range/colonne
+						// Calcul du nombre de donnï¿½es ou != 0 par range/colonne
 						if(cell != 0){
 							sudoku[TAILLE_MAX][i]	++;
 							sudoku[j][TAILLE_MAX]	++;
@@ -130,7 +130,7 @@ public class Sudoku {
 			System.out.println("");
 		}
 	}
-	
+
 	// Solver le sudoku
 	public static boolean backTracking(int i, int j){
 		

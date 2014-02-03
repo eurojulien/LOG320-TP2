@@ -17,9 +17,9 @@ public class Main {
 		System.out.println("Sudoku de base est valide : " + Sudoku.EstValide());
 		
 		Sudoku.backTracking(0, 0);
-		
+
 		Sudoku.printDebugSudoku();
-		
+
 		System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
 	
 		long endTime = System.nanoTime();
