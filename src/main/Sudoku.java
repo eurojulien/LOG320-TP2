@@ -183,4 +183,72 @@ public class Sudoku {
 		
 		return isSolved;
 	}
+	
+	public void remplirCasesEvidentes(){
+		
+		boolean changementGrille = false;
+		
+		//Si on ajoute une case, on doit repasser pour voir s'il n'y a pas une nouvelle case evidente : raison de la boucle.
+		do{
+			for(int i = 0 ; i < TAILLE_MAX ; i++)
+				for(int j = 0 ; j < TAILLE_MAX ; j++)
+					if(remplirCaseEvidente (i,j))
+						changementGrille = true;
+		}while(changementGrille);
+	}
+	
+	private boolean remplirCaseEvidente (int i, int j){
+		
+		int sommeCases = 45; //somme de toutes les cases d'une rangee/colonne/carre
+		int caseI = 0;
+		int caseJ = 0;
+		
+		//les données sur le nombre de cases remplies est déjà indiqué dans le sudoku.
+		//on peut donc vérifier rangee-colonne tres rapidement
+		
+		if(sudoku[TAILLE_MAX + 1][j] == 8){
+			for(int z = 0; z < TAILLE_MAX; z ++){
+				sommeCases -= sudoku[z][j];
+				if(sudoku[z][j] == 0){caseI = z;caseJ = j;}
+			}
+			sudoku[caseI][caseJ] = sommeCases;
+			return true;
+		}
+		
+		if(sudoku[i][TAILLE_MAX + 1] == 8){
+			for(int z = 0; z < TAILLE_MAX; z ++){
+				sommeCases -= sudoku[i][z];
+				if(sudoku[i][z] == 0){caseI = z;caseJ = j;}
+			}
+			sudoku[caseI][caseJ] = sommeCases;
+			return true;
+		}
+		
+		//Analyse du carre
+		int offsetI = (int)Math.floor(i/3) * 3;
+		int offsetJ = (int)Math.floor(j/3) * 3;
+		int nbCasesVide = 0;
+		
+		for(int z = 0; z < TAILLE_MAX; z ++){
+			
+			int coordI = offsetI + z%3;
+			int coordJ = offsetJ + (int)Math.floor(z/3);
+
+			if(sudoku[coordI][coordJ] == 0){
+				nbCasesVide++;
+				if(nbCasesVide > 1) break;
+				sommeCases -= sudoku[coordI][coordJ];
+				
+				caseI = coordI;
+				caseJ = coordJ;
+			}			
+		}
+		
+		if(nbCasesVide == 1){
+			sudoku[caseI][caseJ] = sommeCases;
+			return true;
+		}
+		
+		return false;
+	}
 }
