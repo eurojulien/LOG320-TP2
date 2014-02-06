@@ -19,7 +19,7 @@ public class matriceResolution {
     public static int[][] obtenirListePositionsPreferable(int[][] sudoku){
 
         int[][] listePreferable = new int[81][2];
-        int[][] tabSolving = new int[9][9];
+        int[][] tabSolving = createNewMatrice(sudoku);
 
         for(int i = 0;i<TAILLE_MAX;i++){
             for(int j = 0;j<TAILLE_MAX;j++){
@@ -44,30 +44,28 @@ public class matriceResolution {
             }
             listePreferable[x][0] = meilleurI;
             listePreferable[x][1] = meilleurJ;
+            if(meilleurI > -1 && meilleurJ > -1)
+                tabSolving[meilleurI][meilleurJ] = -1;
         }
         return listePreferable;
     }
 
-    public static String obtenirResultatPossible(int[][] puzzleEncours, int i, int j){
-        String retour = "";
+    public static Boolean[] obtenirResultatPossible(int[][] puzzleEncours, int i, int j){
+        Boolean[] tabResult = new Boolean[9];
         for(int x=0;x<TAILLE_MAX;x++){
             // on vérifie toute la ligne et colone de la case trouvée
             if(x != i){
                 if(puzzleEncours[x][j] != 0){
-                    if(!retour.contains("" + puzzleEncours[x][j])){
-                        if(puzzleEncours[x][j] != 0){
-                            retour += puzzleEncours[x][j];
-                        }
+                    if(puzzleEncours[x][j] != 0){
+                        tabResult[puzzleEncours[x][j] -1] = true;
                     }
                 }
             }
 
             if(x != j){
                 if(puzzleEncours[i][x] != 0){
-                    if(!retour.contains("" + puzzleEncours[i][x])){
-                        if(puzzleEncours[i][x] != 0){
-                            retour += puzzleEncours[i][x];
-                        }
+                    if(puzzleEncours[i][x] != 0){
+                        tabResult[puzzleEncours[i][x] -1] = true;
                     }
                 }
             }
@@ -82,16 +80,16 @@ public class matriceResolution {
         //todo a optimiser ici !
         for(int n = startIndexI; n<maxN;n++){
             for(int m = startIndexJ; m<maxM;m++){
-                if(!retour.contains("" + puzzleEncours[n][m])){
-                    if(puzzleEncours[n][m] != 0){
-                        retour += puzzleEncours[n][m];
-                    }
+
+                if(puzzleEncours[n][m] != 0){
+                    tabResult[puzzleEncours[n][m] -1] = true;
                 }
+
             }
         }
 
 
-        return retour;
+        return tabResult;
     }
 
     public matriceResolution(int[][] puzzleEnCours,matriceResolution parent,String name){
@@ -221,6 +219,21 @@ public class matriceResolution {
        return retour;
    }
 
+    private static int[][] createNewMatrice(int[][] puzzleEnCours){
+        // on initialise la table
+        int[][] tabSolving = new int[9][9];
+        for(int i = 0;i<tabSolving.length;i++){
+            tabSolving[i] = new int[9];
+            for(int j = 0;j<tabSolving[i].length;j++){
+                if(puzzleEnCours[i][j] == 0){
+                    tabSolving[i][j] = 0;
+                }else{
+                    tabSolving[i][j] = -1;
+                }
+            }
+        }
+        return tabSolving;
+    }
 
     private void createNewMatrice(){
         // on initialise la table

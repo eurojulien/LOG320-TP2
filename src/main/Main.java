@@ -7,22 +7,24 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
-		long startTime = System.nanoTime();
 		
 		Sudoku.getSudokuFromFile(args[0]);
 		
 		Sudoku.printDebugSudoku();
 		
 		System.out.println("Sudoku de base est valide : " + Sudoku.EstValide());
-		
-		Sudoku.backTracking(0, 0);
+
+        long startTime = System.nanoTime();
+
+        Sudoku.setListeOrdrePreferable(matriceResolution.obtenirListePositionsPreferable(Sudoku.getSudoku()));
+
+		Sudoku.backTracking(0);
+
+        long endTime = System.nanoTime();
 
 		Sudoku.printDebugSudoku();
 
 		System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
-	
-		long endTime = System.nanoTime();
 		
 		System.out.println("Elapsed Time : " + (endTime - startTime)/(1000000) + " milliseconds");
 	}
