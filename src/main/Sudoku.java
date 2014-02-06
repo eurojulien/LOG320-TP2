@@ -212,6 +212,7 @@ public class Sudoku {
 				if(sudoku[z][j] == 0){caseI = z;caseJ = j;}
 			}
 			sudoku[caseI][caseJ] = sommeCases;
+			sudoku[TAILLE_MAX + 1][j] = 9;
 			return true;
 		}
 		
@@ -221,6 +222,7 @@ public class Sudoku {
 				if(sudoku[i][z] == 0){caseI = z;caseJ = j;}
 			}
 			sudoku[caseI][caseJ] = sommeCases;
+			sudoku[i][TAILLE_MAX + 1] = 9;
 			return true;
 		}
 		
