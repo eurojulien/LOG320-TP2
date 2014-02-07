@@ -7,18 +7,56 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		Sudoku.getSudokuFromFile(args[0]);
+
+        Sudoku.getSudokuFromFile(args[0]);
 		
 		Sudoku.printDebugSudoku();
 		
 		System.out.println("Sudoku de base est valide : " + Sudoku.EstValide());
 
+
+        long startTime = System.nanoTime();
+        long endTime = 0;
+        SudokuSolver ss = new SudokuSolver(Sudoku.getSudoku());
+
+        if(ss.backTracking()){
+            System.out.println("Sudoku résolut!");
+            ss.printDebugSudoku();
+            endTime = System.nanoTime();
+        }else{
+            System.out.println("Sudoku non résolut!");
+        }
+
+        System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
+
+        System.out.println("Elapsed Time : " + (endTime - startTime)/(1000000) + " milliseconds");
+
+        /*Boolean[][][] matriceChoix = new Boolean[9][9][9];
+        long startTime = System.nanoTime();
+
+        /*try{
+            matriceChoix = matriceResolution.genererTablePossibilites(Sudoku.getSudoku(),true);
+        }catch (Exception ex){
+            System.out.println("Erreur not caught ! cant be solved here");
+        }
+
+        Sudoku.setListeOrdrePreferable(matriceResolution.obtenirListePositionsPreferable(Sudoku.getSudoku()));
+
+        Sudoku.backTracking(0,matriceChoix);
+
+        try{
+            Sudoku.setTableauPossibilite(matriceResolution.genererTablePossibilites(Sudoku.getSudoku(),false));
+        } catch (Exception ex){
+            System.out.println("Erreur not caught ! cant be solved here");
+        }*/
+
+
+        /*
         long startTime = System.nanoTime();
 
         Sudoku.setListeOrdrePreferable(matriceResolution.obtenirListePositionsPreferable(Sudoku.getSudoku()));
 
-		Sudoku.backTracking(0);
+        Sudoku.backTracking(0);
 
         long endTime = System.nanoTime();
 
@@ -27,6 +65,8 @@ public class Main {
 		System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
 		
 		System.out.println("Elapsed Time : " + (endTime - startTime)/(1000000) + " milliseconds");
+        */
+
 	}
 
 }

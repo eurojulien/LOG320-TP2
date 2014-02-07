@@ -7,32 +7,40 @@ import java.util.ArrayList;
  * Created by alexandre on 14-01-29.
  */
 public class matriceResolution {
-    int[][] puzzleEnCours;
-    matriceResolution parent;
-    int[][] tabSolving = new int[9][9];
     final static private int TAILLE_MAX = 9;
-    private int highestScore = 0;
-    String name = "";
-    ArrayList<int[]> tabCoordoneeGagnante = new ArrayList<int[]>();
 
+    public static Boolean[][][] genererTablePossibilites(int[][] sudoku, Boolean toFill) throws Exception{
+        Boolean[][][] tableRetour = new Boolean[9][9][9];
+        for(int i=0;i<tableRetour.length;i++){
+            for(int j = 0;j<tableRetour[i].length;j++){
+                if(toFill){
+                    tableRetour[i][j] = obtenirResultatPossibleWithFilling(sudoku,i,j);
+                }else{
+                    tableRetour[i][j] = obtenirResultatPossible(sudoku,i,j);
+                }
+            }
+        }
+        return tableRetour;
+    }
 
-    public static int[][] obtenirListePositionsPreferable(int[][] sudoku){
+    public static ArrayList<int[]> obtenirListePositionsPreferable(int[][] sudoku){
 
-        int[][] listePreferable = new int[81][2];
-        int[][] tabSolving = createNewMatrice(sudoku);
+        //int[][] listePreferable = new int[81][2];
+        ArrayList<int[]> lstPositionPref = new ArrayList<int[]>();
+        int[][] tabSolving = new int[9][9];
 
         for(int i = 0;i<TAILLE_MAX;i++){
             for(int j = 0;j<TAILLE_MAX;j++){
                 if(sudoku[i][j] != 0){
-                    tabSolving = addValue(i,j,tabSolving);
+                    tabSolving = addValue(i,j,tabSolving,sudoku);
                 }
             }
         }
-
-        for(int x =0; x<listePreferable.length;x++){
+        int meilleurScore =1;
+        while(meilleurScore>0){
             int meilleurI = -1;
             int meilleurJ = -1;
-            int meilleurScore =0;
+            meilleurScore =0;
             for(int i =0;i<tabSolving.length;i++){
                 for(int j = 0;j<tabSolving[i].length;j++){
                     if(tabSolving[i][j] >= meilleurScore){
@@ -42,13 +50,73 @@ public class matriceResolution {
                     }
                 }
             }
-            listePreferable[x][0] = meilleurI;
-            listePreferable[x][1] = meilleurJ;
+
+            lstPositionPref.add(new int[]{meilleurI,meilleurJ});
             if(meilleurI > -1 && meilleurJ > -1)
                 tabSolving[meilleurI][meilleurJ] = -1;
         }
-        return listePreferable;
+        return lstPositionPref;
     }
+
+    public static Boolean[] obtenirResultatPossibleWithFilling(int[][] puzzleEncours, int i, int j) throws Exception{
+        Boolean[] tabResult = new Boolean[9];
+        int compteur = 0;
+        for(int x=0;x<TAILLE_MAX;x++){
+            // on vérifie toute la ligne et colone de la case trouvée
+            if(x != i){
+                if(puzzleEncours[x][j] != 0){
+                    if(tabResult[puzzleEncours[x][j] -1] == null)
+                        compteur++;
+                    tabResult[puzzleEncours[x][j] -1] = true;
+                }
+            }
+
+            if(x != j){
+                if(puzzleEncours[i][x] != 0){
+                    if(tabResult[puzzleEncours[i][x] -1] == null)
+                        compteur++;
+                    tabResult[puzzleEncours[i][x] -1] = true;
+                }
+            }
+        }
+
+
+        int startIndexI = getStartIndexForSquare(i);
+        int startIndexJ = getStartIndexForSquare(j);
+        int maxN = startIndexI + 3;
+        int maxM = startIndexJ + 3;
+
+        //todo a optimiser ici !
+        for(int n = startIndexI; n<maxN;n++){
+            for(int m = startIndexJ; m<maxM;m++){
+                if(n != i && m != i){
+                    if(puzzleEncours[n][m] != 0){
+                        if(tabResult[puzzleEncours[n][m] -1] == null)
+                            compteur++;
+                        tabResult[puzzleEncours[n][m] -1] = true;
+                    }
+                }
+
+            }
+        }
+
+        if(compteur == 8){
+            for(int x=0;x<tabResult.length;x++){
+                if(tabResult[x] == null){
+                    if(Sudoku.EstValide(i,j,x+1)){
+                        puzzleEncours[i][j] = x+1;
+                    }
+                }
+            }
+        }else if(compteur == 9){
+            puzzleEncours[i][j] = 0;
+            throw new Exception();
+        }
+
+        return tabResult;
+    }
+
+
 
     public static Boolean[] obtenirResultatPossible(int[][] puzzleEncours, int i, int j){
         Boolean[] tabResult = new Boolean[9];
@@ -80,144 +148,14 @@ public class matriceResolution {
         //todo a optimiser ici !
         for(int n = startIndexI; n<maxN;n++){
             for(int m = startIndexJ; m<maxM;m++){
-
                 if(puzzleEncours[n][m] != 0){
                     tabResult[puzzleEncours[n][m] -1] = true;
                 }
 
             }
         }
-
-
         return tabResult;
     }
-
-    public matriceResolution(int[][] puzzleEnCours,matriceResolution parent,String name){
-        this.puzzleEnCours = puzzleEnCours;
-        this.parent = parent;
-        this.name = name;
-        createNewMatrice();
-        calculeValeurs();
-    }
-
-    private void calculeValeurs(){
-        // on itère dans la table du sudoku pour remplir la table de solving
-        for(int i = 0;i<TAILLE_MAX;i++){
-            for(int j = 0;j<TAILLE_MAX;j++){
-                if(puzzleEnCours[i][j] != 0){
-                    //addValue(i,j);
-                }
-            }
-        }
-
-        // on trouve les coordonées les plus probables
-        for(int i = 0;i<TAILLE_MAX;i++){
-            for(int j = 0;j<TAILLE_MAX;j++){
-                    if(tabSolving[i][j] == highestScore){
-                        tabCoordoneeGagnante.add(new int[] {i,j});
-                    }
-            }
-        }
-
-        // pour chaque case gagnante, on crée des enfants a cette occurence
-        int plusGrandScore = 0;
-        Boolean hasWinner = false;
-        ArrayList<String> strTabValues = new ArrayList<String>();
-        for(int s = 0; s< tabCoordoneeGagnante.size();s++){
-            String accumulateur = "";
-            int i = tabCoordoneeGagnante.get(s)[0];
-            int j = tabCoordoneeGagnante.get(s)[1];
-            for(int x=0;x<TAILLE_MAX;x++){
-                // on vérifie toute la ligne et colone de la case trouvée
-                if(x != i){
-                    if(puzzleEnCours[x][j] != 0){
-                        if(!accumulateur.contains("" + puzzleEnCours[x][j])){
-                            if(puzzleEnCours[x][j] != 0){
-                                accumulateur += puzzleEnCours[x][j];
-                            }
-                        }
-                    }
-                }
-
-                if(x != j){
-                    if(puzzleEnCours[i][x] != 0){
-                        if(!accumulateur.contains("" + puzzleEnCours[i][x])){
-                            if(puzzleEnCours[i][x] != 0){
-                                accumulateur += puzzleEnCours[i][x];
-                            }
-                        }
-                    }
-                }
-            }
-
-            int startIndexI = getStartIndexForSquare(i);
-            int startIndexJ = getStartIndexForSquare(j);
-            int maxN = startIndexI + 3;
-            int maxM = startIndexJ + 3;
-            for(int n = startIndexI; n<maxN;n++){
-                for(int m = startIndexJ; m<maxM;m++){
-                        if(!accumulateur.contains("" + puzzleEnCours[n][m])){
-                            if(puzzleEnCours[n][m] != 0){
-                                accumulateur += puzzleEnCours[n][m];
-                            }
-                        }
-                }
-            }
-            strTabValues.add(accumulateur);
-            if(accumulateur.length() == 7){
-                hasWinner = true;
-            }else if(accumulateur.length() == 8){
-                System.out.println(name + " une erreur s'est produite ici !");
-
-            }
-        }
-        if(strTabValues.size() == 0){
-            System.out.println("COUCOU");
-        }
-
-        System.out.println(name + ": HIGHSCORE IS :" + highestScore + " Has winner :" + hasWinner);
-        for(int x = 0; x<strTabValues.size();x++){
-            String strEnCours = analyseChaine(strTabValues.get(x));
-            int[] positionEncours = tabCoordoneeGagnante.get(x);
-
-            int posX = positionEncours[0] + 1;
-            int posY = positionEncours[1] + 1;
-
-            if(strEnCours.length() == 1){
-                System.out.println(name + ":La position " + posX  + ":" + posY);
-                System.out.println(name + ":Pleine certitude, on insert : " + strEnCours);
-                // coder la descente directe
-                puzzleEnCours[positionEncours[0]][positionEncours[1]] = Integer.parseInt(strEnCours);
-                matriceResolution MR = new matriceResolution(puzzleEnCours,this,name + ":" + strEnCours);
-            }else if(!hasWinner){
-                // on garde le/les plus probable et on recommence a partir de là
-                System.out.println(name + ":La position " + posX  + ":" + posY);
-                System.out.println(name + ":On essaie les valeurs : " + strEnCours);
-                if(strEnCours.length() == 0){
-                    System.out.println(name + "COUCOU !");
-                }
-                for(int s=0;s<strEnCours.length();s++){
-                    String caseTestee = strEnCours.substring(s,s+1);
-                    puzzleEnCours[positionEncours[0]][positionEncours[1]] = Integer.parseInt(caseTestee);
-                    matriceResolution MR = new matriceResolution(puzzleEnCours,this,name + ":" + caseTestee);
-                }
-            }else{
-                System.out.println(name + " Lenght:" + strEnCours + " n'a pas passer");
-            }
-        }
-
-        System.out.println(name + ": out ---");
-
-    }
-   private String analyseChaine(String contenu){
-       String retour= "";
-       for(int i = 1; i<10;i++){
-           if(!contenu.contains(""+i)){
-               retour += i;
-           }
-       }
-       return retour;
-   }
 
     private static int[][] createNewMatrice(int[][] puzzleEnCours){
         // on initialise la table
@@ -235,34 +173,7 @@ public class matriceResolution {
         return tabSolving;
     }
 
-    private void createNewMatrice(){
-        // on initialise la table
-        for(int i = 0;i<tabSolving.length;i++){
-            tabSolving[i] = new int[9];
-            for(int j = 0;j<tabSolving[i].length;j++){
-                if(puzzleEnCours[i][j] == 0){
-                    tabSolving[i][j] = 0;
-                }else{
-                    tabSolving[i][j] = -1;
-                }
-            }
-        }
-    }
 
-    public void printDebugSudoku(){
-        System.out.println("===Debug matrice===");
-        for (int i = 0; i < TAILLE_MAX; i ++){
-
-            System.out.println("- - - - - - - - -");
-
-            for (int j = 0; j < TAILLE_MAX; j ++){
-
-                System.out.print(puzzleEnCours[j][i] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("===Debug matrice===");
-    }
 
     private static int getStartIndexForSquare(int position){
         int resultmodulo = (position+1) % 3;
@@ -277,17 +188,17 @@ public class matriceResolution {
         return startIndex;
     }
 
-    public static int[][] addValue(int i,int j,int[][] tabSolving){
+    public static int[][] addValue(int i,int j,int[][] tabSolving,int[][] sudoku){
 
         for(int x=0;x<TAILLE_MAX;x++){
             if(x != i){
-                if(tabSolving[x][j] != -1){
+                if(sudoku[x][j] == 0){
                     tabSolving[x][j]++;
                 }
             }
 
             if(x != j){
-                if(tabSolving[i][x] != -1){
+                if(sudoku[i][x] == 0){
                     tabSolving[i][x]++;
                 }
             }
@@ -300,7 +211,7 @@ public class matriceResolution {
         int maxM = startIndexJ + 3;
         for(int n = startIndexI; n<maxN;n++){
             for(int m = startIndexJ; m<maxM;m++){
-                if(tabSolving[n][m] != -1){
+                if(sudoku[n][m] == 0){
                     tabSolving[n][m] ++;
                 }
             }

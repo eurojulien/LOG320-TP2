@@ -1,6 +1,8 @@
 package main;
 
 import java.math.*;
+import java.util.ArrayList;
+
 public class Sudoku {
 
 	
@@ -26,11 +28,15 @@ public class Sudoku {
 	 *   # # #   # # #   # # # 
 	 */
 	private static final int TAILLE_MAX		= 9;
-	private static int[][] sudoku 			= new int[TAILLE_MAX + 1][TAILLE_MAX + 1];
-
-    public static int[][] listeOrdrePreferable;
+	public static int[][] sudoku 			= new int[TAILLE_MAX + 1][TAILLE_MAX + 1];
+    private static Boolean[][][] tableauPossibilite;
+    public static ArrayList<int[]> listeOrdrePreferable;
 
 	private Sudoku(){}
+
+    public static void setTableauPossibilite(Boolean[][][] tabPoss){
+        tableauPossibilite = tabPoss;
+    }
 
 	// Creation du sudoku a partir d'un fichier texte
 	public static void getSudokuFromFile(String fileName){
@@ -73,7 +79,7 @@ public class Sudoku {
         return sudoku;
     }
 
-    public static void setListeOrdrePreferable(int[][] listeOrdrePreferableRecu){
+    public static void setListeOrdrePreferable(ArrayList<int[]> listeOrdrePreferableRecu){
         listeOrdrePreferable = listeOrdrePreferableRecu;
     }
 
@@ -133,67 +139,51 @@ public class Sudoku {
 
 			for (int j = 0; j < TAILLE_MAX; j ++){
 
-				System.out.print(sudoku[j][i] + " ");
+				System.out.print(sudoku[i][j] + " ");
 			}
 
 			System.out.println("");
 		}
+
+        System.out.println(" = = = = = = = = = ");
 	}
 
 	// Solver le sudoku
 	public static boolean backTracking(int compteur){
 
-		int i = listeOrdrePreferable[compteur][0];
-        int j = listeOrdrePreferable[compteur][1];
-
+		int i = listeOrdrePreferable.get(compteur)[0];
+        int j = listeOrdrePreferable.get(compteur)[1];
         compteur ++;
 
-        int nextI = i, nextJ = j;
+        //int nextI = i, nextJ = j;
 		boolean isSolved = false;
 
-        if(i == -1 || j == -1){
-            isSolved = true;
+        if(compteur == listeOrdrePreferable.size()){
             return true;
         }
 
-        if(sudoku[i][j] != 0){
-            return true;
-        }
-		// Recherche de la prochaine case a verifier (Valeur initiale doit etre = zero)
 
-        if(compteur == listeOrdrePreferable.length){
-            isSolved = true;
-        }
-
-        if(compteur >= 0){
-
-            Boolean[] tabValeurTrouvee = matriceResolution.obtenirResultatPossible(sudoku,i,j);
-            for(int x=0;x<tabValeurTrouvee.length;x++){
-                if(tabValeurTrouvee[x]==null){
-                    sudoku[i][j] = x+1;
-                    if(isSolved){
-                        return true;
-                    }
-                    else if (backTracking(compteur)) return true;
-                }
-
-
-
+        if(listeOrdrePreferable.size() - compteur < 20){
+            AutoComplete ac = new AutoComplete(sudoku);
+            if(ac.tryAutoComplete()){
+                System.out.println("auto complete claims win");
+                sudoku = ac.getSudoku();
+                return true;
+            }else{
+                return false;
             }
-        }else{
+        }
 
-            for(int cell = 1; cell <= TAILLE_MAX; cell ++){
 
-                    //System.out.println(i + ":" + j + " TRY : " + cell);
-
-                    if(EstValide(i, j, cell)){
-                        sudoku[i][j] = cell;
-                        if(isSolved){
-                            return true;
-                        }
-
-                        else if (backTracking(compteur)) return true;
-                    }
+        // on trouve la valeur manuellement
+        Boolean[] tabValeurTrouvee = matriceResolution.obtenirResultatPossible(sudoku,i,j);
+        for(int x=0;x<tabValeurTrouvee.length;x++){
+            if(tabValeurTrouvee[x]==null){
+                sudoku[i][j] = x+1;
+                if(isSolved){
+                    return true;
+                }
+                else if (backTracking(compteur)) return true;
             }
         }
 
@@ -206,4 +196,63 @@ public class Sudoku {
 		
 		return isSolved;
 	}
+
+
+
+    public static boolean backTracking(int compteur,Boolean[][][] tableChoixBool){
+
+        boolean isSolved = false;
+        if(compteur < listeOrdrePreferable.size()){
+            int i = listeOrdrePreferable.get(compteur)[0];
+            int j = listeOrdrePreferable.get(compteur)[1];
+            compteur ++;
+
+            if(compteur%5 == 0){
+                try{
+                    tableChoixBool=matriceResolution.genererTablePossibilites(sudoku,true);
+                } catch (Exception ex){
+                    return false;
+                }
+                compteur =0;
+                listeOrdrePreferable = matriceResolution.obtenirListePositionsPreferable(sudoku);
+                i = listeOrdrePreferable.get(compteur)[0];
+                j = listeOrdrePreferable.get(compteur)[1];
+                compteur ++;
+            }
+
+            if(sudoku[i][j] == 0){
+                if(compteur == listeOrdrePreferable.size()){
+                    isSolved = true;
+                }
+                // on utilise le tableau pergen
+                boolean passedByTries = false;
+                for(int x=0;x<tableChoixBool[i][j].length;x++){
+                    if(tableChoixBool[i][j][x]==null){
+                        passedByTries = true;
+                        if(EstValide(i,j,x+1)){
+                            sudoku[i][j] = x+1;
+                            if(isSolved){
+                                return true;
+                            }
+                            else if (backTracking(compteur,tableChoixBool)){
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+                if(!passedByTries){
+                    return false;
+                }
+            }
+
+            if(!isSolved){
+                sudoku[i][j] = 0;
+            }
+        }else{
+            return true;
+        }
+
+        return isSolved;
+    }
 }
