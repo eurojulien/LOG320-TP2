@@ -92,11 +92,13 @@ public class SudokuSolver {
     public boolean backTracking(){
         /*(listeOrdrePreferable.size() - compteur > 20);*/
         Boolean shouldAutoCompleteMore = false;
+
         if(!genererTablePossibilites(shouldAutoCompleteMore)){
             // on remplis la liste des possibilitée et on regarde pour les certitudes.
             // si l'algo détecte un problème, on retourne false
             return false;
         }
+
         if(compteur == listeOrdrePreferable.size()){
             // pas sur que sa veut dire victoire, mais bon todo chek it out
             return true;
