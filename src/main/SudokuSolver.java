@@ -12,6 +12,8 @@ public class SudokuSolver {
     private final int TAILLE_MAX		= 9;
     private Boolean[][][] tableauPossibilite;
     public ArrayList<int[]> listeOrdrePreferable;
+    Boolean finalLooping = false;
+    ArrayList<int[]> tabDidntFind = new ArrayList<int[]>();
 
     public SudokuSolver(int[][] sudoku,ArrayList<int[]> listeOrdrePreferable){
         tableauPossibilite = new Boolean[9][9][9];
@@ -88,7 +90,9 @@ public class SudokuSolver {
     }
 
     public boolean backTracking(){
-        if(!genererTablePossibilites(true)){
+        /*(listeOrdrePreferable.size() - compteur > 20);*/
+        Boolean shouldAutoCompleteMore = false;
+        if(!genererTablePossibilites(shouldAutoCompleteMore)){
             // on remplis la liste des possibilitée et on regarde pour les certitudes.
             // si l'algo détecte un problème, on retourne false
             return false;
@@ -230,6 +234,9 @@ public class SudokuSolver {
         }else if(compteur == 9){
             sudoku[i][j] = 0;
             valid = false;
+        }else{
+            if(!finalLooping)
+                tabDidntFind.add(new int[]{i,j});
         }
 
         tableauPossibilite[i][j] = tabResult;
@@ -345,19 +352,23 @@ public class SudokuSolver {
         System.out.println(" = = = = = = = = = ");
     }
 
-    public Boolean genererTablePossibilites(Boolean toFill){
+    public Boolean genererTablePossibilites(Boolean lastNodes){
         Boolean valid = true;
         for(int i=0;i<tableauPossibilite.length;i++){
             for(int j = 0;j<tableauPossibilite[i].length;j++){
-                if(toFill){
-                    if(!obtenirResultatPossibleWithFilling(i,j)){
-                        return false;
-                    }
-                }else{
-                    tableauPossibilite[i][j] = obtenirResultatPossible(i,j);
+                if(!obtenirResultatPossibleWithFilling(i,j)){
+                    return false;
                 }
             }
         }
+
+        if(lastNodes){
+            finalLooping = true;
+            for(int i = 0;i<tabDidntFind.size();i++){
+                if(!obtenirResultatPossibleWithFilling(tabDidntFind.get(i)[0],tabDidntFind.get(i)[1]))return false;
+            }
+        }
+
         return valid;
     }
 }

@@ -60,12 +60,12 @@ public class Sudoku {
 							cell 						= Character.getNumericValue((int) BinaryStdIn.readChar());
 						}while(cell < 0);
 
-						sudoku[j][i]				= cell;
+						sudoku[i][j]				= cell;
 
 						// Calcul du nombre de donn�es ou != 0 par range/colonne
 						if(cell != 0){
-							sudoku[TAILLE_MAX][i]	++;
-							sudoku[j][TAILLE_MAX]	++;
+							sudoku[TAILLE_MAX][j]	++;
+							sudoku[i][TAILLE_MAX]	++;
 						}
 					}
 				}
