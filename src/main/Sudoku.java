@@ -8,8 +8,8 @@ public class Sudoku {
 	 * Description Sudoku
 	 * 
 	 * 0 = Valeur de la case
-	 * # = Nombre de données > 0 de la colonne/ligne
-	 * # sera utilisé plus tard pour un algorithme plus avance
+	 * # = Nombre de donnees > 0 de la colonne/ligne
+	 * # sera utilise plus tard pour un algorithme plus avance
 	 * _ _ _ _ _ _ _ _ _ _ _ _ _
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
@@ -55,7 +55,7 @@ public class Sudoku {
 						
 						sudoku[j][i]				= cell;
 					
-						// Calcul du nombre de données ou != 0 par range/colonne
+						// Calcul du nombre de donnees ou != 0 par range/colonne
 						if(cell != 0){
 							sudoku[TAILLE_MAX][i]	++;
 							sudoku[j][TAILLE_MAX]	++;
@@ -207,8 +207,8 @@ public class Sudoku {
 		int caseVide_posX = 0;
 		int caseVide_posY = 0;
 		
-		//les données sur le nombre de cases remplies est déjà indiqué dans le sudoku.
-		//on peut donc vérifier rangee-colonne tres rapidement
+		//les donnees sur le nombre de cases remplies est deje indique dans le sudoku.
+		//on peut donc verifier rangee-colonne tres rapidement
 		
 		int nbCasesVide = 0;
 		
@@ -239,7 +239,7 @@ public class Sudoku {
 				int coordI = offsetI + z%3;
 				int coordJ = offsetJ + (int)Math.floor(z/3);
 
-				nbCasesVide++;
+				if(sudoku[coordI][coordJ] == 0) nbCasesVide++;
 				if(nbCasesVide > 1) return false; //Dans ce cas, la valeur de la case ne peut pas etre devinee(ni par rangee/colonne/carre) : on termine
 				sommeCases -= sudoku[coordI][coordJ];
 					
@@ -250,8 +250,8 @@ public class Sudoku {
 		
 		sudoku[caseVide_posX][caseVide_posY] = sommeCases;
 		
-		sudoku[TAILLE_MAX + 1][caseVide_posY] = 9;
-		sudoku[caseVide_posX][TAILLE_MAX + 1] = 9;
+		sudoku[TAILLE_MAX + 1][caseVide_posY] = sudoku[TAILLE_MAX + 1][caseVide_posY]++;
+		sudoku[caseVide_posX][TAILLE_MAX + 1] = sudoku[caseVide_posX][TAILLE_MAX + 1]++;
 
 		return true;
 	}
