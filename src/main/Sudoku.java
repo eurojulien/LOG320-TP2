@@ -8,8 +8,8 @@ public class Sudoku {
 	 * Description Sudoku
 	 * 
 	 * 0 = Valeur de la case
-	 * # = Nombre de données > 0 de la colonne/ligne
-	 * # sera utilisé plus tard pour un algorithme plus avance
+	 * # = Nombre de donnees > 0 de la colonne/ligne
+	 * # sera utilise plus tard pour un algorithme plus avance
 	 * _ _ _ _ _ _ _ _ _ _ _ _ _
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
 	 * | 0 0 0 | 0 0 0 | 0 0 0 | #
@@ -55,7 +55,7 @@ public class Sudoku {
 						
 						sudoku[j][i]				= cell;
 					
-						// Calcul du nombre de données ou != 0 par range/colonne
+						// Calcul du nombre de donnees ou != 0 par range/colonne
 						if(cell != 0){
 							sudoku[TAILLE_MAX][i]	++;
 							sudoku[j][TAILLE_MAX]	++;
@@ -182,5 +182,77 @@ public class Sudoku {
 		sudoku[i][j] = 0;
 		
 		return isSolved;
+	}
+	
+	public void solutionsDepart(){
+		
+		boolean changementGrille = false;
+		
+		//Si on ajoute une case, on doit repasser pour voir s'il n'y a pas une nouvelle case evidente : raison de la boucle.
+		do{
+			changementGrille = false;
+			
+			for(int i = 0 ; i < TAILLE_MAX ; i++)
+				for(int j = 0 ; j < TAILLE_MAX ; j++)
+					if(remplirCaseEvidente (i,j))
+						changementGrille = true;
+		}while(changementGrille);
+	}
+	
+	private boolean remplirCaseEvidente (int i, int j){
+		
+		if(sudoku[i][j] != 0) return false;
+		
+		int sommeCases = 45; //somme de toutes les cases d'une rangee/colonne/carre
+		int caseVide_posX = 0;
+		int caseVide_posY = 0;
+		
+		//les donnees sur le nombre de cases remplies est deje indique dans le sudoku.
+		//on peut donc verifier rangee-colonne tres rapidement
+		
+		int nbCasesVide = 0;
+		
+		for(int z = 0; z < TAILLE_MAX; z ++){
+			
+			if(sudoku[TAILLE_MAX + 1][j] == 8){//Si on a 8 cases remplies par rangee
+				sommeCases -= sudoku[z][j];
+				
+				if(sudoku[z][j] == 0){ //on a atteint la case vide
+					caseVide_posX = z;
+					caseVide_posY = j;
+				}
+			}
+			
+			else if(sudoku[i][TAILLE_MAX + 1] == 8){//Si on a 8 cases remplies par colone
+				sommeCases -= sudoku[i][z];
+				
+				if(sudoku[i][z] == 0){ //on a atteint la case vide
+					caseVide_posX = z;
+					caseVide_posY = j;
+				}
+			}
+			
+			else{ //On verifie si on a 8 cases remplies
+				int offsetI = (int)Math.floor(i/3) * 3;
+				int offsetJ = (int)Math.floor(j/3) * 3;
+
+				int coordI = offsetI + z%3;
+				int coordJ = offsetJ + (int)Math.floor(z/3);
+
+				if(sudoku[coordI][coordJ] == 0) nbCasesVide++;
+				if(nbCasesVide > 1) return false; //Dans ce cas, la valeur de la case ne peut pas etre devinee(ni par rangee/colonne/carre) : on termine
+				sommeCases -= sudoku[coordI][coordJ];
+					
+				caseVide_posX = coordI;
+				caseVide_posY = coordJ;
+			}
+		}
+		
+		sudoku[caseVide_posX][caseVide_posY] = sommeCases;
+		
+		sudoku[TAILLE_MAX + 1][caseVide_posY] = sudoku[TAILLE_MAX + 1][caseVide_posY]++;
+		sudoku[caseVide_posX][TAILLE_MAX + 1] = sudoku[caseVide_posX][TAILLE_MAX + 1]++;
+
+		return true;
 	}
 }
