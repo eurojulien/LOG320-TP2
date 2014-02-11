@@ -131,8 +131,21 @@ public class Sudoku {
 		}
 	}
 	
-	// Solver le sudoku
 	public static boolean backTracking(int i, int j){
+		
+		// Verification des cases qui peuvent etre remplies avant lancement backtracking
+		//solutionsDepart();
+		
+		while (sudoku[i][j] != 0){
+			
+			if(j < (TAILLE_MAX - 1)){
+				j 	++;
+			}
+			else if(i < (TAILLE_MAX - 1)){
+				i 	++;
+				j = 0;
+			}
+		}
 		
 		int nextI = i, nextJ = j;
 		boolean isSolved = false;
@@ -183,30 +196,65 @@ public class Sudoku {
 		
 		return isSolved;
 	}
+}
 	
-	public void solutionsDepart(){
+	/*
+	public static void solutionsDepart(){
 		
-		boolean changementGrille = false;
+		for(int z = 0; z < TAILLE_MAX; z ++){
+			
+			// Colonne
+			if (sudoku[z][TAILLE_MAX] == TAILLE_MAX-1){
+				remplirColonne(z);
+			}
+			
+			// Ligne
+			else if(sudoku[TAILLE_MAX][z] == TAILLE_MAX-1){
+				remplirRangee(z);
+			}
+			
+			// carre 3 x 3
+			else{
+				verfifierEtRemplirCarre(z%3 * 3, (z/3) * 3);
+			}
+		}
+	}
+		
+	public static void remplirColonne(int i){
+	
+		int totalColonne = 45;
+		
+		for (int z = 0; z < TAILLE_MAX; z ++){
+			totalColonne -= sudoku[i][z];
+			
+			if(sudoku)
+		}
+	}
+		
 		
 		//Si on ajoute une case, on doit repasser pour voir s'il n'y a pas une nouvelle case evidente : raison de la boucle.
 		do{
 			changementGrille = false;
-			
-			for(int i = 0 ; i < TAILLE_MAX ; i++)
-				for(int j = 0 ; j < TAILLE_MAX ; j++)
-					if(remplirCaseEvidente (i,j))
+			for(int i = 0 ; i < TAILLE_MAX && !changementGrille; i++)
+				for(int j = 0 ; j < TAILLE_MAX && !changementGrille; j++)
+					if(remplirCaseEvidente (i,j)){
 						changementGrille = true;
+						System.out.println("\n ================================== IT IS TRUE =================================== \n");
+						printDebugSudoku();
+					}
+						
 		}while(changementGrille);
 	}
 	
-	private boolean remplirCaseEvidente (int i, int j){
+	private static boolean remplirCaseEvidente (int i, int j){
 		
 		if(sudoku[i][j] != 0) return false;
 		
 		int sommeCases = 45; //somme de toutes les cases d'une rangee/colonne/carre
-		int caseVide_posX = 0;
-		int caseVide_posY = 0;
 		
+		// Offset pour le carre 3 x 3
+		int offsetI = (int)Math.floor(i/3) * 3;
+		int offsetJ = (int)Math.floor(j/3) * 3;
 		//les donnees sur le nombre de cases remplies est deje indique dans le sudoku.
 		//on peut donc verifier rangee-colonne tres rapidement
 		
@@ -214,45 +262,45 @@ public class Sudoku {
 		
 		for(int z = 0; z < TAILLE_MAX; z ++){
 			
-			if(sudoku[TAILLE_MAX + 1][j] == 8){//Si on a 8 cases remplies par rangee
+			//Si on a 8 cases remplies par rangee
+			if(sudoku[TAILLE_MAX][j] == TAILLE_MAX-1){
 				sommeCases -= sudoku[z][j];
-				
-				if(sudoku[z][j] == 0){ //on a atteint la case vide
-					caseVide_posX = z;
-					caseVide_posY = j;
-				}
+		
 			}
 			
-			else if(sudoku[i][TAILLE_MAX + 1] == 8){//Si on a 8 cases remplies par colone
+			//Si on a 8 cases remplies par colonne
+			else if(sudoku[i][TAILLE_MAX] == TAILLE_MAX-1){
 				sommeCases -= sudoku[i][z];
-				
-				if(sudoku[i][z] == 0){ //on a atteint la case vide
-					caseVide_posX = z;
-					caseVide_posY = j;
-				}
+	
 			}
 			
-			else{ //On verifie si on a 8 cases remplies
-				int offsetI = (int)Math.floor(i/3) * 3;
-				int offsetJ = (int)Math.floor(j/3) * 3;
-
+			//Verification d'un carre 3 x 3
+			else{ 
+								
+				
 				int coordI = offsetI + z%3;
 				int coordJ = offsetJ + (int)Math.floor(z/3);
 
 				if(sudoku[coordI][coordJ] == 0) nbCasesVide++;
-				if(nbCasesVide > 1) return false; //Dans ce cas, la valeur de la case ne peut pas etre devinee(ni par rangee/colonne/carre) : on termine
+				System.out.println("[" + coordI + "] [" + coordJ + "] VALUE : " + sudoku[coordI][coordJ] + " Cases Vides : " + nbCasesVide + "\n");
+				
+				if(nbCasesVide > 1) {
+					//System.out.println("FALSE ! \n");
+					return false; //Dans ce cas, la valeur de la case ne peut pas etre devinee(ni par rangee/colonne/carre) : on termine
+				}
+				
 				sommeCases -= sudoku[coordI][coordJ];
-					
-				caseVide_posX = coordI;
-				caseVide_posY = coordJ;
 			}
 		}
 		
-		sudoku[caseVide_posX][caseVide_posY] = sommeCases;
+		System.out.println("\n [" + i + "] [" + j + "] valeur : " + sommeCases);
+		sudoku[i][j] = sommeCases;
 		
-		sudoku[TAILLE_MAX + 1][caseVide_posY] = sudoku[TAILLE_MAX + 1][caseVide_posY]++;
-		sudoku[caseVide_posX][TAILLE_MAX + 1] = sudoku[caseVide_posX][TAILLE_MAX + 1]++;
+		sudoku[i][TAILLE_MAX] = sudoku[i][TAILLE_MAX] + 1;
+		sudoku[TAILLE_MAX][j] = sudoku[TAILLE_MAX][j] + 1;
 
 		return true;
 	}
 }
+	
+	*/
