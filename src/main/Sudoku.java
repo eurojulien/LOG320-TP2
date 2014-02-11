@@ -191,7 +191,7 @@ public class Sudoku {
 		//Si on ajoute une case, on doit repasser pour voir s'il n'y a pas une nouvelle case evidente : raison de la boucle.
 		do{
 			changementGrille = false;
-			
+			// yo!
 			for(int i = 0 ; i < TAILLE_MAX ; i++)
 				for(int j = 0 ; j < TAILLE_MAX ; j++)
 					if(remplirCaseEvidente (i,j))
