@@ -131,8 +131,21 @@ public class Sudoku {
 		}
 	}
 	
-	// Solver le sudoku
 	public static boolean backTracking(int i, int j){
+		
+		// Verification des cases qui peuvent etre remplies avant lancement backtracking
+		//solutionsDepart();
+		
+		while (sudoku[i][j] != 0){
+			
+			if(j < (TAILLE_MAX - 1)){
+				j 	++;
+			}
+			else if(i < (TAILLE_MAX - 1)){
+				i 	++;
+				j = 0;
+			}
+		}
 		
 		int nextI = i, nextJ = j;
 		boolean isSolved = false;
