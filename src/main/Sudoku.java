@@ -116,6 +116,26 @@ public class Sudoku {
 	}
 	
 	// Fonction Debug
+	public static void printSudoku(){
+		
+		for (int i = 0; i < TAILLE_MAX; i ++){
+			
+			if (i%3 == 0) System.out.println("  - - - - - - - - - - -");
+			
+			for (int j = 0; j < TAILLE_MAX; j ++){
+				
+				if (j%3 == 0) System.out.print("| ");
+				System.out.print(sudoku[j][i] + " ");
+				if (j == TAILLE_MAX - 1) System.out.print("|");
+			}
+			
+			if (i == TAILLE_MAX - 1) System.out.println("\n  - - - - - - - - - - -");
+			
+			System.out.println("");
+		}
+	}
+	
+	// Fonction Debug
 	public static void printDebugSudoku(){
 		
 		for (int i = 0; i < TAILLE_MAX + 1; i ++){
