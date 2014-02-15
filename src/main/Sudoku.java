@@ -196,13 +196,14 @@ public class Sudoku {
 		}while(sudoku[nextI][nextJ] != 0 && nextI * nextJ < LAST_CELL);
 		
 		//if (i == 7 && j == 6) System.out.println("Next I : " + nextI + " Next J : " + nextJ + " VALUE I J : " + sudoku[nextI][nextJ]);
-		
+
 		// Verification des differentes possibilites
+        Boolean[] allowedValues = obtenirResultatPossible(i,j);
 		for(int cell = 1; cell <= TAILLE_MAX; cell ++){
-				
+
 				//System.out.println(i + ":" + j + " TRY : " + cell);
-				
-				if(EstValide(i, j, cell)){
+
+				if(allowedValues[cell -1] == null){
 					sudoku[i][j] = cell;
 					if(isSolved){
 						return true;
@@ -219,8 +220,62 @@ public class Sudoku {
 		
 		return isSolved;
 	}
+
+    public static Boolean[] obtenirResultatPossible(int i, int j){
+        Boolean[] tabResult = new Boolean[9];
+        for(int x=0;x<TAILLE_MAX;x++){
+            // on vérifie toute la ligne et colone de la case trouvée
+            if(x != i){
+                if(sudoku[x][j] != 0){
+                    if(sudoku[x][j] != 0){
+                        tabResult[sudoku[x][j] -1] = true;
+                    }
+                }
+            }
+
+            if(x != j){
+                if(sudoku[i][x] != 0){
+                    if(sudoku[i][x] != 0){
+                        tabResult[sudoku[i][x] -1] = true;
+                    }
+                }
+            }
+        }
+
+
+        int startIndexI = getStartIndexForSquare(i);
+        int startIndexJ = getStartIndexForSquare(j);
+        int maxN = startIndexI + 3;
+        int maxM = startIndexJ + 3;
+
+        //todo a optimiser ici !
+        for(int n = startIndexI; n<maxN;n++){
+            for(int m = startIndexJ; m<maxM;m++){
+                if(sudoku[n][m] != 0){
+                    tabResult[sudoku[n][m] -1] = true;
+                }
+
+            }
+        }
+        return tabResult;
+    }
+
+    private static int getStartIndexForSquare(int position){
+        int resultmodulo = (position+1) % 3;
+        int startIndex = 0;
+        if(resultmodulo == 1){
+            startIndex = position;
+        }else if(resultmodulo == 2){
+            startIndex = position-1;
+        }else if(resultmodulo == 0){
+            startIndex = position -2;
+        }
+        return startIndex;
+    }
 }
-	
+
+
+
 	/*
 	public static void solutionsDepart(){
 		
