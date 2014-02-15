@@ -26,6 +26,7 @@ public class Sudoku {
 	 *   # # #   # # #   # # # 
 	 */
 	private static final int TAILLE_MAX		= 9;
+	private static final int LAST_CELL		= 64;
 	private static int[][] sudoku 			= new int[TAILLE_MAX + 1][TAILLE_MAX + 1];
 	
 	
@@ -116,6 +117,26 @@ public class Sudoku {
 	}
 	
 	// Fonction Debug
+	public static void printSudoku(){
+		
+		for (int i = 0; i < TAILLE_MAX; i ++){
+			
+			if (i%3 == 0) System.out.println("  - - - - - - - - - - -");
+			
+			for (int j = 0; j < TAILLE_MAX; j ++){
+				
+				if (j%3 == 0) System.out.print("| ");
+				System.out.print(sudoku[j][i] + " ");
+				if (j == TAILLE_MAX - 1) System.out.print("|");
+			}
+			
+			if (i == TAILLE_MAX - 1) System.out.println("\n  - - - - - - - - - - -");
+			
+			System.out.println("");
+		}
+	}
+	
+	// Fonction Debug
 	public static void printDebugSudoku(){
 		
 		for (int i = 0; i < TAILLE_MAX + 1; i ++){
@@ -136,14 +157,14 @@ public class Sudoku {
 		// Verification des cases qui peuvent etre remplies avant lancement backtracking
 		//solutionsDepart();
 		
-		while (sudoku[i][j] != 0){
+		while (sudoku[i][j] != 0 && j * i < LAST_CELL){
 			
-			if(j < (TAILLE_MAX - 1)){
-				j 	++;
-			}
-			else if(i < (TAILLE_MAX - 1)){
+			if(i < (TAILLE_MAX - 1)){
 				i 	++;
-				j = 0;
+			}
+			else if(j < (TAILLE_MAX - 1)){
+				j 	++;
+				i = 0;
 			}
 		}
 		
@@ -152,12 +173,14 @@ public class Sudoku {
 		
 		// Recherche de la prochaine case a verifier (Valeur initiale doit etre = zero)
 		do{
-			if(nextJ < (TAILLE_MAX - 1)){
-				nextJ 	++;
-			}
-			else if(nextI < (TAILLE_MAX - 1)){
+			//System.out.println("Next I : " + nextI + " Next J : " + nextJ + " VALUE : " + sudoku[nextI][nextJ]);
+			
+			if(nextI < (TAILLE_MAX - 1)){
 				nextI 	++;
-				nextJ = 0;
+			}
+			else if(nextJ < (TAILLE_MAX - 1)){
+				nextJ 	++;
+				nextI = 0;
 			}
 			else{
 				// Derniere case du tableau 2D Sudoku atteinte
@@ -170,9 +193,9 @@ public class Sudoku {
 			}
 			
 		// Boucle pour sauter par dessus les cases ou il y a deja un chiffre
-		}while(sudoku[nextI][nextJ] != 0 && nextI != TAILLE_MAX-1 && nextJ != TAILLE_MAX-1);
+		}while(sudoku[nextI][nextJ] != 0 && nextI * nextJ < LAST_CELL);
 		
-		//System.out.println("Next I : " + nextI + " Next J : " + nextJ);
+		//if (i == 7 && j == 6) System.out.println("Next I : " + nextI + " Next J : " + nextJ + " VALUE I J : " + sudoku[nextI][nextJ]);
 		
 		// Verification des differentes possibilites
 		for(int cell = 1; cell <= TAILLE_MAX; cell ++){
