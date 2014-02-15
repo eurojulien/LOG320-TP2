@@ -6,7 +6,7 @@ package main;
 
 public class Main {
 
-	private final static int MAX_FILES = 3;
+	private final static int MAX_FILES = 5;
 	
 	public static void main(String[] args) {
 		
