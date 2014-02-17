@@ -22,17 +22,25 @@ public class Main {
 		
 		System.out.println("Sudoku de base est valide : " + Sudoku.EstValide());
 		
-		long startTime = System.nanoTime();
+		if (Sudoku.EstValide()){
+			
+			long startTime = System.nanoTime();
+			
+			Sudoku.backTracking(0, 0);
+			
+			long endTime = System.nanoTime();
+			
+			Sudoku.printSudoku();
+			
+			System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
 		
-		Sudoku.backTracking(0, 0);
+			System.out.println("Elapsed Time : " + (endTime - startTime)/(1000000) + " milliseconds");
+		}
 		
-		long endTime = System.nanoTime();
+		else{
+			System.out.println("\n\n\n\n");
+		}
 		
-		Sudoku.printSudoku();
-		
-		System.out.println("Sudoku final est valide : " + Sudoku.EstValide());
-	
-		System.out.println("Elapsed Time : " + (endTime - startTime)/(1000000) + " milliseconds");
 	}
 	
 	// Méthode pour tester plusieurs sudoku
